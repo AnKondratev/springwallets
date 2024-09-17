@@ -16,4 +16,10 @@ public class Wallet implements Serializable {
     @Column(unique = true)
     private UUID walletId;
     private long balance;
+
+    @Override
+    public String toString() {
+        return "Идентификатор: " + walletId + "\n"
+                + "Баланс счета: " + balance;
+    }
 }

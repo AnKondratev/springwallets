@@ -10,6 +10,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,26 +23,28 @@ public class WalletServiceImpl implements WalletService {
     private final WalletOperationRepository walletOperationRepository;
 
     @Override
-   // @Cacheable(value = "wallets")
     public List<Wallet> getWallets() {
         return repository.findAll();
     }
 
     @Override
     @CachePut(value = "wallets", key = "#wallet.id")
-    public void saveWallet(Wallet wallet) {
+    public void saveWallet(@Validated Wallet wallet) {
         repository.save(wallet);
     }
 
     @Override
     @Cacheable(value = "wallets", key = "#walletId")
     public Wallet findByUUID(UUID walletId) {
+        if (repository.findByWalletId(walletId) == null) {
+            throw new IllegalArgumentException("Кошелек не найден");
+        }
         return repository.findByWalletId(walletId);
     }
 
     @Override
     @CacheEvict(value = "wallets", key = "#operation.walletId")
-    public void operation(WalletOperation operation) {
+    public void operation(@Validated WalletOperation operation) {
         UUID walletId = operation.getWalletId();
         long amount = operation.getAmount();
 
@@ -52,5 +55,14 @@ public class WalletServiceImpl implements WalletService {
         operation.getOperationType().execute(wallet, amount);
         repository.save(wallet);
         walletOperationRepository.save(operation);
+    }
+
+    public boolean isValidUUID(String uuidStr) {
+        try {
+            UUID.fromString(uuidStr);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

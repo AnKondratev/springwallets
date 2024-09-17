@@ -1,12 +1,12 @@
 package an.kondratev.springwallets.controller;
 
+import an.kondratev.springwallets.Impl.WalletServiceImpl;
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
 import an.kondratev.springwallets.service.WalletService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -15,26 +15,27 @@ import java.util.UUID;
 public class WalletController {
 
     private final WalletService walletService;
-
-
-    @GetMapping("wallets")
-    public List<Wallet> getWallets() {
-        return walletService.getWallets();
-    }
+    private final WalletServiceImpl walletServiceImpl;
 
     @PostMapping("save_wallet")
     public String saveWallet(@RequestBody Wallet wallet) {
         walletService.saveWallet(wallet);
-        return "Saved wallet";
+        return "Новый счет успешно создан";
     }
 
     @GetMapping("wallets/{uuid}")
-    public Wallet findWalletById(@PathVariable UUID uuid) {
-        return walletService.findByUUID(uuid);
+    public String findWalletById(@PathVariable String uuid) {
+
+        if (!walletServiceImpl.isValidUUID(uuid)) {
+            return "Некорректный формат UUID!";
+        }
+        Wallet wallet = walletService.findByUUID(UUID.fromString(uuid));
+        return wallet.toString();
     }
 
     @PostMapping("wallet")
-    public void operation(@RequestBody WalletOperation operation) {
+    public String operation(@RequestBody WalletOperation operation) {
         walletService.operation(operation);
+        return "Операция прошла успешно";
     }
 }
