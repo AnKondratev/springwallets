@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_foreign_key_to_wallets_operations
+      author: andrey
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: wallets_operations
+            baseColumnNames: wallet_id
+            referencedTableName: wallets
+            constraintName: fk_wallets_operations_wallets
+            referencedColumnNames: wallet_id

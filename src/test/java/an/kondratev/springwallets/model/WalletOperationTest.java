@@ -35,9 +35,8 @@ class WalletOperationTest {
     void testWithdrawInsufficientFunds() {
         long withdrawAmount = 1200;
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            WalletOperation.OperationType.WITHDRAW.execute(wallet, withdrawAmount);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, ()
+                -> WalletOperation.OperationType.WITHDRAW.execute(wallet, withdrawAmount));
 
         assertEquals("Недостаточно средств", exception.getMessage());
     }
@@ -62,9 +61,8 @@ class WalletOperationTest {
     void testWithdrawNegativeAmount() {
         long withdrawAmount = -500;
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            WalletOperation.OperationType.WITHDRAW.execute(wallet, withdrawAmount);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, ()
+                -> WalletOperation.OperationType.WITHDRAW.execute(wallet, withdrawAmount));
 
         assertEquals("Внесите корректную сумму для пополнения", exception.getMessage());
     }
@@ -72,10 +70,8 @@ class WalletOperationTest {
     @Test
     void testDepositNegativeAmount() {
         long depositAmount = -500;
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            WalletOperation.OperationType.DEPOSIT.execute(wallet, depositAmount);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, ()
+                -> WalletOperation.OperationType.DEPOSIT.execute(wallet, depositAmount));
 
         assertEquals("Внесите корректную сумму для пополнения", exception.getMessage());
     }
