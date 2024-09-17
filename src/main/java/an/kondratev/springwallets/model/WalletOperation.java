@@ -4,13 +4,14 @@ import an.kondratev.springwallets.service.WalletOperations;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 
 @Data
 @Entity
 @Table(name = "wallets_operations")
-public class WalletOperation {
+public class WalletOperation implements Serializable {
     @Id
     @GeneratedValue
     @Column(unique = true)

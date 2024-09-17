@@ -6,6 +6,9 @@ import an.kondratev.springwallets.repository.WalletOperationRepository;
 import an.kondratev.springwallets.repository.WalletRepository;
 import an.kondratev.springwallets.service.WalletService;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,26 +22,30 @@ public class WalletServiceImpl implements WalletService {
     private final WalletOperationRepository walletOperationRepository;
 
     @Override
+   // @Cacheable(value = "wallets")
     public List<Wallet> getWallets() {
         return repository.findAll();
     }
 
     @Override
+    @CachePut(value = "wallets", key = "#wallet.id")
     public void saveWallet(Wallet wallet) {
         repository.save(wallet);
     }
 
     @Override
+    @Cacheable(value = "wallets", key = "#walletId")
     public Wallet findByUUID(UUID walletId) {
         return repository.findByWalletId(walletId);
     }
 
     @Override
+    @CacheEvict(value = "wallets", key = "#operation.walletId")
     public void operation(WalletOperation operation) {
         UUID walletId = operation.getWalletId();
         long amount = operation.getAmount();
 
-        Wallet wallet = findByUUID(walletId);
+        Wallet wallet = repository.findByWalletId(walletId);
         if (wallet == null) {
             throw new IllegalArgumentException("Кошелек не найден");
         }
