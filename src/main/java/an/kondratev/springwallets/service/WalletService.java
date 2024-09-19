@@ -10,5 +10,4 @@ public interface WalletService {
     void saveWallet(Wallet wallet);
     Wallet findByUUID(UUID uuid);
     void operation(WalletOperation operation);
-
 }

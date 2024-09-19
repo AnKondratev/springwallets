@@ -1,0 +1,4 @@
+changeLogFile: src/main/resources/db/changelog/db.changelog-master.yaml
+url: jdbc:postgresql://wallet_db:5432/wallet_db
+username: andrey
+password: 1384

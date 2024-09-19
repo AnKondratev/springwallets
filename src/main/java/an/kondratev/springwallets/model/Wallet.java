@@ -11,15 +11,20 @@ import java.util.UUID;
 @Table(name = "wallets")
 public class Wallet implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true)
     private Long id;
     @Column(unique = true)
     private UUID walletId;
     private long balance;
 
+    public Wallet() {
+        this.walletId = UUID.randomUUID();
+    }
+
     @Override
     public String toString() {
         return "Идентификатор: " + walletId + "\n"
-                + "Баланс счета: " + balance;
+               + "Баланс счета: " + balance;
     }
 }

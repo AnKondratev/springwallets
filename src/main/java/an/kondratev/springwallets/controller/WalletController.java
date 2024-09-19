@@ -19,7 +19,7 @@ public class WalletController {
     @PostMapping("save_wallet")
     public String saveWallet(@RequestBody Wallet wallet) {
         walletService.saveWallet(wallet);
-        return "Новый счет успешно создан";
+        return "Новый счет успешно создан" + "\n" + "Идентификатор: " + wallet.toString();
     }
 
     @GetMapping("wallets/{uuid}")

@@ -6,8 +6,6 @@ import an.kondratev.springwallets.repository.WalletOperationRepository;
 import an.kondratev.springwallets.repository.WalletRepository;
 import an.kondratev.springwallets.service.WalletService;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -21,7 +19,6 @@ public class WalletServiceImpl implements WalletService {
     private final WalletOperationRepository walletOperationRepository;
 
     @Override
-    @CachePut(value = "wallets", key = "#wallet.id")
     public void saveWallet(@Validated Wallet wallet) {
         repository.save(wallet);
     }
@@ -41,7 +38,6 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    @CacheEvict(value = "wallets", key = "#operation.walletId")
     public void operation(@Validated WalletOperation operation) {
         Wallet wallet = repository.findByWalletId(operation.getWalletId());
         if (wallet == null) {

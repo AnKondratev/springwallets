@@ -11,7 +11,7 @@ import java.util.UUID;
 @Table(name = "wallets_operations")
 public class WalletOperation implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true)
     private Long id;
     private UUID walletId;

@@ -1,9 +1,10 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/wallet_db
+    url: jdbc:postgresql://wallet_db:5432/wallet_db
     username: andrey
     password: 1384
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -13,5 +14,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
