@@ -7,12 +7,10 @@ import an.kondratev.springwallets.repository.WalletRepository;
 import an.kondratev.springwallets.service.WalletService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,38 +21,50 @@ public class WalletServiceImpl implements WalletService {
     private final WalletOperationRepository walletOperationRepository;
 
     @Override
-    public List<Wallet> getWallets() {
-        return repository.findAll();
-    }
-
-    @Override
     @CachePut(value = "wallets", key = "#wallet.id")
     public void saveWallet(@Validated Wallet wallet) {
         repository.save(wallet);
     }
 
     @Override
-    @Cacheable(value = "wallets", key = "#walletId")
     public Wallet findByUUID(UUID walletId) {
-        if (repository.findByWalletId(walletId) == null) {
-            throw new IllegalArgumentException("Кошелек не найден");
+        if (!isValidUUID(walletId.toString())) {
+            throw new IllegalArgumentException("Некорректный формат UUID!");
         }
-        return repository.findByWalletId(walletId);
-    }
-
-    @Override
-    @CacheEvict(value = "wallets", key = "#operation.walletId")
-    public void operation(@Validated WalletOperation operation) {
-        UUID walletId = operation.getWalletId();
-        long amount = operation.getAmount();
 
         Wallet wallet = repository.findByWalletId(walletId);
         if (wallet == null) {
             throw new IllegalArgumentException("Кошелек не найден");
         }
-        operation.getOperationType().execute(wallet, amount);
+
+        return wallet;
+    }
+
+    @Override
+    @CacheEvict(value = "wallets", key = "#operation.walletId")
+    public void operation(@Validated WalletOperation operation) {
+        Wallet wallet = repository.findByWalletId(operation.getWalletId());
+        if (wallet == null) {
+            throw new IllegalArgumentException("Кошелек не найден");
+        }
+
+        performOperation(wallet, operation.getOperationType(), operation.getAmount());
         repository.save(wallet);
         walletOperationRepository.save(operation);
+    }
+
+    private void performOperation(Wallet wallet, WalletOperation.OperationType operationType, long amount) {
+        switch (operationType) {
+            case DEPOSIT:
+                wallet.setBalance(wallet.getBalance() + amount);
+                break;
+            case WITHDRAW:
+                if (wallet.getBalance() < amount) {
+                    throw new IllegalArgumentException("Недостаточно средств для снятия");
+                }
+                wallet.setBalance(wallet.getBalance() - amount);
+                break;
+        }
     }
 
     public boolean isValidUUID(String uuidStr) {
@@ -66,3 +76,4 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 }
+

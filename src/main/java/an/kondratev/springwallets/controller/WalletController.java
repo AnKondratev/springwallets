@@ -1,10 +1,10 @@
 package an.kondratev.springwallets.controller;
 
-import an.kondratev.springwallets.Impl.WalletServiceImpl;
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
 import an.kondratev.springwallets.service.WalletService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -15,7 +15,6 @@ import java.util.UUID;
 public class WalletController {
 
     private final WalletService walletService;
-    private final WalletServiceImpl walletServiceImpl;
 
     @PostMapping("save_wallet")
     public String saveWallet(@RequestBody Wallet wallet) {
@@ -24,13 +23,9 @@ public class WalletController {
     }
 
     @GetMapping("wallets/{uuid}")
-    public String findWalletById(@PathVariable String uuid) {
-
-        if (!walletServiceImpl.isValidUUID(uuid)) {
-            return "Некорректный формат UUID!";
-        }
+    public ResponseEntity<String> findWalletById(@PathVariable String uuid) {
         Wallet wallet = walletService.findByUUID(UUID.fromString(uuid));
-        return wallet.toString();
+        return ResponseEntity.ok(wallet.toString());
     }
 
     @PostMapping("wallet")
