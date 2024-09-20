@@ -1,0 +1,32 @@
+services:
+  wallet_app:
+    build:
+      context: .
+    depends_on:
+      - wallet_db
+    command:
+      - ./wait-for-it.sh
+      - wallet_db:5432
+      - java
+      - -jar
+      - /app.jar
+      - --server.port=8080
+    ports:
+      - "8080:8080"
+    networks:
+      - wallet-network
+
+  wallet_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: wallet_db
+      POSTGRES_USER: andrey
+      POSTGRES_PASSWORD: "1384"
+    ports:
+      - "5432:5432"
+    networks:
+      - wallet-network
+
+networks:
+  wallet-network:
+    driver: bridge
