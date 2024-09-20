@@ -13,6 +13,7 @@ check_and_terminate_app() {
     local SERVICE_NAME=$2
 
     # Проверяем, занят ли порт
+    # shellcheck disable=SC2086
     if lsof -i :$PORT > /dev/null; then
         echo "$SERVICE_NAME порт $PORT занят. Завершаем приложение..."
 
