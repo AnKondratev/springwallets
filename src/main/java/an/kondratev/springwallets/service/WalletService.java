@@ -5,7 +5,6 @@ import an.kondratev.springwallets.model.WalletOperation;
 
 import java.util.UUID;
 
-
 public interface WalletService {
     void saveWallet(Wallet wallet);
     Wallet findByUUID(UUID uuid);

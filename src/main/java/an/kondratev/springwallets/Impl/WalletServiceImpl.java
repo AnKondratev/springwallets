@@ -29,12 +29,7 @@ public class WalletServiceImpl implements WalletService {
             throw new IllegalArgumentException("Некорректный формат UUID!");
         }
 
-        Wallet wallet = repository.findByWalletId(walletId);
-        if (wallet == null) {
-            throw new IllegalArgumentException("Кошелек не найден");
-        }
-
-        return wallet;
+        return repository.findByWalletId(walletId);
     }
 
     @Override
