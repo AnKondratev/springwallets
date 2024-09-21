@@ -11,7 +11,7 @@
   <p>В теле запроса указывается только начальный баланс кошелька, UUID генерируется автоматически.<p></ul>
 <li><strong>Тело запроса:</strong></li></ul>
 <pre><code class="json language-json hljs"> <span class="hljs-punctuation">{</span>
-   <span class="hljs-attr">"amount"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1000</span>
+   <span class="hljs-attr">"balance"</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1000</span>
  <span class="hljs-punctuation">}</span>
  </code></pre>
 <li><p><strong>Изменение кошелька</strong></p>
