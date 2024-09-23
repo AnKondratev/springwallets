@@ -14,16 +14,16 @@ check_and_terminate_app() {
 
     # Проверяем, занят ли порт
     # shellcheck disable=SC2086
-    if lsof -i :$PORT > /dev/null; then
+    if sudo lsof -i :$PORT > /dev/null; then
         echo "$SERVICE_NAME порт $PORT занят. Завершаем приложение..."
 
         # Получаем имя приложения, занимающего порт
-        APP_NAME=$(lsof -t -i :$PORT)
+        APP_NAME=$(sudo lsof -t -i :$PORT)
 
         # Завершаем приложение, используя именно его PID
         for PID in $APP_NAME; do
             if [ -n "$PID" ]; then
-                kill "$PID" && echo "$SERVICE_NAME приложение с PID $PID завершено." || echo "Не удалось завершить приложение с PID $PID."
+                sudo kill "$PID" && echo "$SERVICE_NAME приложение с PID $PID завершено." || echo "Не удалось завершить приложение с PID $PID."
             fi
         done
     else
@@ -37,13 +37,13 @@ check_and_terminate_docker_container() {
     local SERVICE_NAME=$2
 
     # Проверяем, есть ли запущенные контейнеры, использующие указанный порт
-    CONTAINER_ID=$(docker ps --filter "publish=$PORT" -q)
+    CONTAINER_ID=$(sudo docker ps --filter "publish=$PORT" -q)
 
     if [ -n "$CONTAINER_ID" ]; then
         echo "$SERVICE_NAME порт $PORT занят контейнером Docker. Завершаем контейнер..."
 
         # Завершаем контейнер
-        docker stop "$CONTAINER_ID" && echo "Контейнер с ID $CONTAINER_ID завершен." || echo "Не удалось завершить контейнер с ID $CONTAINER_ID."
+        sudo docker stop "$CONTAINER_ID" && echo "Контейнер с ID $CONTAINER_ID завершен." || echo "Не удалось завершить контейнер с ID $CONTAINER_ID."
     else
         echo "$SERVICE_NAME порт $PORT свободен для контейнеров Docker."
     fi
@@ -57,4 +57,4 @@ check_and_terminate_docker_container $POSTGRES_PORT "PostgreSQL"
 
 # Сборка и запуск Docker Compose
 echo "Запускаем сборку и запуск Docker Compose..."
-docker-compose up --build
+sudo docker-compose up --build

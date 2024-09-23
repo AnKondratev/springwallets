@@ -12,5 +12,5 @@ public interface WalletService {
 
     Wallet findByUUID(UUID uuid);
 
-    void operation(WalletOperation operation);
+    void performOperation(WalletOperation operation);
 }
