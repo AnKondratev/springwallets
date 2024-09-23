@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Data
 @Entity
@@ -16,7 +17,8 @@ public class Wallet implements Serializable {
     private Long id;
     @Column(unique = true)
     private UUID walletId;
-    private long balance;
+    private AtomicLong balance;
+
 
     public Wallet() {
         this.walletId = UUID.randomUUID();

@@ -25,10 +25,6 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet findByUUID(UUID walletId) {
-        if (!isValidUUID(walletId.toString())) {
-            throw new IllegalArgumentException("Некорректный формат UUID!");
-        }
-
         return repository.findByWalletId(walletId);
     }
 
@@ -38,7 +34,6 @@ public class WalletServiceImpl implements WalletService {
         if (wallet == null) {
             throw new IllegalArgumentException("Кошелек не найден");
         }
-
         performOperation(wallet, operation.getOperationType(), operation.getAmount());
         repository.save(wallet);
         walletOperationRepository.save(operation);
@@ -47,23 +42,20 @@ public class WalletServiceImpl implements WalletService {
     private void performOperation(Wallet wallet, WalletOperation.OperationType operationType, long amount) {
         switch (operationType) {
             case DEPOSIT:
-                wallet.setBalance(wallet.getBalance() + amount);
+                wallet.getBalance().addAndGet(amount);
                 break;
             case WITHDRAW:
-                if (wallet.getBalance() < amount) {
-                    throw new IllegalArgumentException("Недостаточно средств для снятия");
+                long currentBalance = wallet.getBalance().get();
+                while (true) {
+                    if (currentBalance < amount) {
+                        throw new IllegalArgumentException("Недостаточно средств для снятия");
+                    }
+                    if (wallet.getBalance().compareAndSet(currentBalance, currentBalance - amount)) {
+                        break;
+                    }
+                    currentBalance = wallet.getBalance().get();
                 }
-                wallet.setBalance(wallet.getBalance() - amount);
                 break;
-        }
-    }
-
-    public boolean isValidUUID(String uuidStr) {
-        try {
-            UUID.fromString(uuidStr);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
         }
     }
 }
