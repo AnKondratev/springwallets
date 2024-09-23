@@ -2,127 +2,123 @@ package an.kondratev.springwallets.Impl;
 
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
-import an.kondratev.springwallets.repository.WalletOperationRepository;
 import an.kondratev.springwallets.repository.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class WalletServiceImplTest {
 
+    @InjectMocks
     private WalletServiceImpl walletService;
-    private WalletRepository walletRepositoryMock;
-    private WalletOperationRepository walletOperationRepositoryMock;
+
+    @Mock
+    private WalletRepository walletRepository;
+
+    private Wallet wallet;
 
     @BeforeEach
     void setUp() {
-        walletRepositoryMock = Mockito.mock(WalletRepository.class);
-        walletOperationRepositoryMock = Mockito.mock(WalletOperationRepository.class);
-        walletService = new WalletServiceImpl(walletRepositoryMock, walletOperationRepositoryMock);
+        MockitoAnnotations.openMocks(this);
+        wallet = new Wallet();
+        wallet.setWalletId(UUID.randomUUID());
+        wallet.setBalance(100L);
     }
 
     @Test
-    void testSaveWallet() {
-        Wallet wallet = new Wallet();
-        wallet.setBalance(new AtomicLong(100));
+    void testSaveWallet_NewWallet_ShouldGenerateUUID() {
+        Wallet newWallet = new Wallet();
+        walletService.saveWallet(newWallet);
 
+        assertNotNull(newWallet.getWalletId());
+        verify(walletRepository).save(newWallet);
+    }
+
+    @Test
+    void testSaveWallet_ExistingWallet_ShouldSaveWithoutChangingUUID() {
         walletService.saveWallet(wallet);
-        Mockito.verify(walletRepositoryMock, Mockito.times(1)).save(wallet);
+        verify(walletRepository).save(wallet);
     }
 
     @Test
-    void testFindByUUID() {
-        UUID walletId = UUID.randomUUID();
-        Wallet wallet = new Wallet();
-        wallet.setWalletId(walletId);
+    void testFindByUUID_ShouldReturnWallet() {
+        when(walletRepository.findByWalletId(wallet.getWalletId())).thenReturn(wallet);
 
-        Mockito.when(walletRepositoryMock.findByWalletId(walletId)).thenReturn(wallet);
-        Wallet foundWallet = walletService.findByUUID(walletId);
+        Wallet foundWallet = walletService.findByUUID(wallet.getWalletId());
 
         assertEquals(wallet, foundWallet);
     }
 
     @Test
-    void testOperationWithDeposit() {
-        Wallet wallet = new Wallet();
-        UUID walletId = UUID.randomUUID();
-        wallet.setWalletId(walletId);
-        wallet.setBalance(new AtomicLong(100));
+    void testFindByUUID_WalletNotFound_ShouldReturnNull() {
+        when(walletRepository.findByWalletId(wallet.getWalletId())).thenReturn(null);
 
-        Mockito.when(walletRepositoryMock.findByWalletId(walletId)).thenReturn(wallet);
+        Wallet foundWallet = walletService.findByUUID(UUID.randomUUID());
 
-        WalletOperation operation = new WalletOperation();
-        operation.setWalletId(walletId);
-        operation.setOperationType(WalletOperation.OperationType.DEPOSIT);
-        operation.setAmount(50);
-
-        walletService.operation(operation);
-
-        assertEquals(150, wallet.getBalance().get());
-        Mockito.verify(walletOperationRepositoryMock).save(operation);
+        assertNull(foundWallet);
     }
 
     @Test
-    void testOperationWithWithdraw() {
-        Wallet wallet = new Wallet();
-        UUID walletId = UUID.randomUUID();
-        wallet.setWalletId(walletId);
-        wallet.setBalance(new AtomicLong(100));
+    void testOperation_ValidDeposit_ShouldIncreaseBalance() {
+        WalletOperation depositOperation = new WalletOperation();
+        depositOperation.setWalletId(wallet.getWalletId());
+        depositOperation.setOperationType(WalletOperation.OperationType.DEPOSIT);
+        depositOperation.setAmount(50L);
 
-        Mockito.when(walletRepositoryMock.findByWalletId(walletId)).thenReturn(wallet);
+        when(walletRepository.findByWalletId(wallet.getWalletId())).thenReturn(wallet);
 
-        WalletOperation operation = new WalletOperation();
-        operation.setWalletId(walletId);
-        operation.setOperationType(WalletOperation.OperationType.WITHDRAW);
-        operation.setAmount(50);
+        walletService.operation(depositOperation);
 
-        walletService.operation(operation);
-
-        assertEquals(50, wallet.getBalance().get());
-        Mockito.verify(walletOperationRepositoryMock).save(operation);
+        assertEquals(150L, wallet.getBalance());
+        verify(walletRepository).save(wallet);
     }
 
     @Test
-    void testPerformOperationMultiThreaded() throws InterruptedException {
-        Wallet wallet = new Wallet();
-        UUID walletId = UUID.randomUUID();
-        wallet.setWalletId(walletId);
-        wallet.setBalance(new AtomicLong(100));
+    void testOperation_ValidWithdraw_ShouldDecreaseBalance() {
+        WalletOperation withdrawOperation = new WalletOperation();
+        withdrawOperation.setWalletId(wallet.getWalletId());
+        withdrawOperation.setOperationType(WalletOperation.OperationType.WITHDRAW);
+        withdrawOperation.setAmount(50L);
 
-        Mockito.when(walletRepositoryMock.findByWalletId(walletId)).thenReturn(wallet);
+        when(walletRepository.findByWalletId(wallet.getWalletId())).thenReturn(wallet);
 
-        ExecutorService executor = Executors.newFixedThreadPool(10);
-        CountDownLatch latch = new CountDownLatch(20);
-        for (int i = 0; i < 10; i++) {
-            executor.execute(() -> {
-                WalletOperation depositOperation = new WalletOperation();
-                depositOperation.setWalletId(walletId);
-                depositOperation.setOperationType(WalletOperation.OperationType.DEPOSIT);
-                depositOperation.setAmount(10);
-                walletService.operation(depositOperation);
-                latch.countDown();
-            });
-            executor.execute(() -> {
-                WalletOperation withdrawOperation = new WalletOperation();
-                withdrawOperation.setWalletId(walletId);
-                withdrawOperation.setOperationType(WalletOperation.OperationType.WITHDRAW);
-                withdrawOperation.setAmount(5);
-                walletService.operation(withdrawOperation);
-                latch.countDown();
-            });
-        }
+        walletService.operation(withdrawOperation);
 
-        latch.await();
-        assertEquals(100 + (10 * 10) - (5 * 10), wallet.getBalance().get());
-        executor.shutdown();
+        assertEquals(50L, wallet.getBalance());
+        verify(walletRepository).save(wallet);
+    }
+
+    @Test
+    void testOperation_Withdraw_InsufficientFunds_ShouldThrowException() {
+        WalletOperation withdrawOperation = new WalletOperation();
+        withdrawOperation.setWalletId(wallet.getWalletId());
+        withdrawOperation.setOperationType(WalletOperation.OperationType.WITHDRAW);
+        withdrawOperation.setAmount(150L); // Insufficient funds
+
+        when(walletRepository.findByWalletId(wallet.getWalletId())).thenReturn(wallet);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()
+                -> walletService.operation(withdrawOperation));
+
+        assertEquals("Недостаточно средств для снятия", exception.getMessage());
+        verify(walletRepository, never()).save(wallet);
+    }
+
+    @Test
+    void testOperation_WalletNotFound_ShouldThrowException() {
+        WalletOperation operation = new WalletOperation();
+        operation.setWalletId(UUID.randomUUID()); // Non-existent wallet
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, ()
+                -> walletService.operation(operation));
+
+        assertEquals("Кошелек не найден", exception.getMessage());
     }
 }
 

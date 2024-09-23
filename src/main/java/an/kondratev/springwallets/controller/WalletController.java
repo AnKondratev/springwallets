@@ -4,7 +4,6 @@ import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
 import an.kondratev.springwallets.service.WalletService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,9 +22,9 @@ public class WalletController {
     }
 
     @GetMapping("wallets/{uuid}")
-    public ResponseEntity<String> findWalletById(@PathVariable String uuid) {
+    public String findWalletById(@PathVariable String uuid) {
         Wallet wallet = walletService.findByUUID(UUID.fromString(uuid));
-        return ResponseEntity.ok(wallet.toString());
+        return wallet.toString();
     }
 
     @PostMapping("wallet")

@@ -7,13 +7,18 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        jdbc:
+          batch_size: 50
+        transaction:
+          isolation: SERIALIZABLE
+      javax.persistence.transactionType: RESOURCE_LOCAL
+      hibernate.transaction.jta.platform: org.hibernate.service.jta.JtaPlatformInitiator
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
