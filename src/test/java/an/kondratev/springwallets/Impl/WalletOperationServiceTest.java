@@ -3,6 +3,7 @@ package an.kondratev.springwallets.Impl;
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
 import an.kondratev.springwallets.repository.WalletRepository;
+import an.kondratev.springwallets.service.WalletOperationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;

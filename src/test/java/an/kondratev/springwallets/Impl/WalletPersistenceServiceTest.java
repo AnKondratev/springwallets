@@ -2,6 +2,7 @@ package an.kondratev.springwallets.Impl;
 
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.repository.WalletRepository;
+import an.kondratev.springwallets.service.WalletPersistenceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

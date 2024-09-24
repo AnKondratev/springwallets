@@ -2,7 +2,10 @@ package an.kondratev.springwallets.Impl;
 
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
+import an.kondratev.springwallets.service.WalletOperationService;
+import an.kondratev.springwallets.service.WalletPersistenceService;
 import an.kondratev.springwallets.service.WalletService;
+import an.kondratev.springwallets.service.WalletValidationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

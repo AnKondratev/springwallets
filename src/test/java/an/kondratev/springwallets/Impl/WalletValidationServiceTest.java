@@ -2,6 +2,7 @@ package an.kondratev.springwallets.Impl;
 
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
+import an.kondratev.springwallets.service.WalletValidationService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

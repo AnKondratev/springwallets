@@ -1,4 +1,4 @@
-package an.kondratev.springwallets.Impl;
+package an.kondratev.springwallets.service;
 
 import an.kondratev.springwallets.model.Wallet;
 import an.kondratev.springwallets.model.WalletOperation;
