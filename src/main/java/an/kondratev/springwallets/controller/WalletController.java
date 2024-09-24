@@ -20,7 +20,7 @@ public class WalletController {
     @PostMapping("save_wallet")
     public String saveWallet(@RequestBody Wallet wallet) {
         walletService.saveWallet(wallet);
-        return "Новый счет успешно создан" + "\n" + wallet.toString();
+        return "The new account has been successfully created" + "\n" + wallet.toString();
     }
 
     @GetMapping("wallets/{uuid}")
@@ -33,6 +33,6 @@ public class WalletController {
     public String operation(@RequestBody WalletOperation operation) {
         walletService.performOperation(operation);
         operationRepository.save(operation);
-        return "Операция прошла успешно";
+        return "The transaction was successful\n";
     }
 }

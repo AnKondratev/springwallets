@@ -23,8 +23,8 @@ public class Wallet implements Serializable {
 
     @Override
     public String toString() {
-        return "Идентификатор: " + walletId + "\n"
-               + "Баланс счета: " + getBalance();
+        return "Identifier: " + walletId + "\n"
+               + "Account balance: " + getBalance();
     }
 }
 
