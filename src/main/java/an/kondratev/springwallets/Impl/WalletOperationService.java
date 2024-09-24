@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 @Service
 @AllArgsConstructor
 public class WalletOperationService {
@@ -26,8 +24,7 @@ public class WalletOperationService {
     }
 
     private void modifyBalance(Wallet wallet, Long amount) {
-        Long newBalance = wallet.getBalance() + amount;
-        wallet.setBalance(newBalance);
+        wallet.setBalance(wallet.getBalance() + amount);
     }
 
     private void executeOperation(Wallet wallet, WalletOperation.OperationType operationType, long amount) {
@@ -37,17 +34,10 @@ public class WalletOperationService {
                 break;
             case WITHDRAW:
                 long currentBalance = wallet.getBalance();
-                while (true) {
-                    if (currentBalance < amount) {
-                        throw new IllegalArgumentException("Недостаточно средств для снятия");
-                    }
-                    AtomicLong atomicLong = new AtomicLong(wallet.getBalance());
-                    if (atomicLong.compareAndSet(currentBalance, currentBalance - amount)) {
-                        modifyBalance(wallet, -amount);
-                        break;
-                    }
-                    currentBalance = wallet.getBalance();
+                if (currentBalance < amount) {
+                    throw new IllegalArgumentException("Недостаточно средств для снятия");
                 }
+                modifyBalance(wallet, -amount);
                 break;
         }
     }

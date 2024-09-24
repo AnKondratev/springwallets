@@ -16,7 +16,7 @@ public class WalletValidationService {
 
     public void validateOperation(WalletOperation operation) {
         if (operation.getAmount() <= 0) {
-            throw new IllegalArgumentException("Сумма операции должна быть положительной");
+            throw new IllegalArgumentException("Сумма операции должна быть больше нуля");
         }
     }
 }

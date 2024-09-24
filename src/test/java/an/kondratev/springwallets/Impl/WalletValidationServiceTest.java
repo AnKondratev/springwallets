@@ -40,7 +40,7 @@ class WalletValidationServiceTest {
         operation.setAmount(0);
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()
                 -> walletValidationService.validateOperation(operation));
-        assertEquals("Сумма операции должна быть положительной", thrown.getMessage());
+        assertEquals("Сумма операции должна быть больше нуля", thrown.getMessage());
     }
 
     @Test
@@ -49,7 +49,7 @@ class WalletValidationServiceTest {
         operation.setAmount(-50);
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, ()
                 -> walletValidationService.validateOperation(operation));
-        assertEquals("Сумма операции должна быть положительной", thrown.getMessage());
+        assertEquals("Сумма операции должна быть больше нуля", thrown.getMessage());
     }
 }
 
