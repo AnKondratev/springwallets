@@ -77,4 +77,3 @@ class WalletPersistenceServiceTest {
         verify(walletRepository, times(1)).findByWalletId(walletId);
     }
 }
-

@@ -53,4 +53,3 @@ class WalletValidationServiceTest {
         assertEquals("Сумма операции должна быть больше нуля", thrown.getMessage());
     }
 }
-

@@ -15,10 +15,7 @@ spring:
       hibernate:
         jdbc:
           batch_size: 50
-        transaction:
-          isolation: SERIALIZABLE
       javax.persistence.transactionType: RESOURCE_LOCAL
-      hibernate.transaction.jta.platform: org.hibernate.service.jta.JtaPlatformInitiator
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
